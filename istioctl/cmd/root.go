@@ -74,19 +74,21 @@ func defaultLogOptions() *log.Options {
 
 // GetRootCmd returns the root of the cobra command-tree.
 func GetRootCmd(args []string) *cobra.Command {
+	// 初始化一个 cobra.command 对象用于 istioctl
 	rootCmd := &cobra.Command{
-		Use:               "istioctl",
-		Short:             "Istio control interface.",
+		Use:               "istioctl",                 // command name
+		Short:             "Istio control interface.", //短解释
 		SilenceUsage:      true,
 		DisableAutoGenTag: true,
 		Long: `Istio configuration command line utility for service operators to
 debug and diagnose their Istio mesh.
-`,
+`, // 长解释
+		// command run 之前执行 log 的初始化
 		PersistentPreRunE: istioPersistentPreRunE,
 	}
 	// 将传进来到参数赋值到属于前面定义到 rootCmd 的 Command 结构体 args 变量中
 	rootCmd.SetArgs(args)
-	// 定义 kubeconfig flag,参数依次为 （实际存储变量的地址，flag name, shothand, default value, and usage string.）
+	// 定义 kubeconfig flag 持久化标签, 参数依次为 （实际存储变量的地址，flag name, shothand, default value, and usage string.）
 	rootCmd.PersistentFlags().StringVarP(&kubeconfig, "kubeconfig", "c", "",
 		"Kubernetes configuration file")
 	// 定义 configContext flag, 无 短flag
@@ -108,7 +110,7 @@ debug and diagnose their Istio mesh.
 	}
 
 	cmd.AddFlags(rootCmd)
-
+	// 为根命令添加子命令
 	rootCmd.AddCommand(newVersionCommand())
 	rootCmd.AddCommand(AuthN())
 	rootCmd.AddCommand(register())
