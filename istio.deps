@@ -1,0 +1,16 @@
+[
+  {
+    "_comment": "",
+    "name": "PROXY_REPO_SHA",
+    "repoName": "proxy",
+    "file": "",
+    "lastStableSHA": "3a04f855cd176213f316b5f12d67c2a79e2ffdb9"
+  },
+  {
+    "_comment": "",
+    "name": "CNI_REPO_SHA",
+    "repoName": "cni",
+    "file": "",
+    "lastStableSHA": "78ca45eb4631ce4b6c5564f763d6ebf16226ca56"
+  }
+]
