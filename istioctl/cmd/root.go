@@ -115,7 +115,7 @@ debug and diagnose their Istio mesh.
 	rootCmd.AddCommand(AuthN())
 	rootCmd.AddCommand(register())
 	rootCmd.AddCommand(deregisterCmd)
-	// 比较关心的 inject command
+	// 比较关心的 inject command, istio sidecar 注入 application pod 的 command
 	rootCmd.AddCommand(injectCommand())
 
 	postInstallCmd := &cobra.Command{
