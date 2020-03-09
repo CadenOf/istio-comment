@@ -53,11 +53,12 @@ func createInterface(kubeconfig string) (kubernetes.Interface, error) {
 }
 
 func getMeshConfigFromConfigMap(kubeconfig, command string) (*meshconfig.MeshConfig, error) {
+	// 从 kubeconfig 文件中创建 client 客户端连接到对应到 k8s cluster 中
 	client, err := createInterface(kubeconfig)
 	if err != nil {
 		return nil, err
 	}
-
+	// 获取 istio configmap 的 配置
 	meshConfigMap, err := client.CoreV1().ConfigMaps(istioNamespace).Get(meshConfigMapName, metav1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("could not read valid configmap %q from namespace %q: %v - "+
@@ -67,10 +68,12 @@ func getMeshConfigFromConfigMap(kubeconfig, command string) (*meshconfig.MeshCon
 	// values in the data are strings, while proto might use a
 	// different data type.  therefore, we have to get a value by a
 	// key
+	// istio 的 configmap 中取 data.mesh
 	configYaml, exists := meshConfigMap.Data[configMapKey]
 	if !exists {
 		return nil, fmt.Errorf("missing configuration map key %q", configMapKey)
 	}
+	// 将从 configmap 中获取的 mesh 配置与 default 配置合并
 	cfg, err := mesh.ApplyMeshConfigDefaults(configYaml)
 	if err != nil {
 		err = multierror.Append(err, fmt.Errorf("istioctl version %s cannot parse mesh config.  Install istioctl from the latest Istio release",
@@ -103,6 +106,7 @@ func getValuesFromConfigMap(kubeconfig string) (string, error) {
 }
 
 func getInjectConfigFromConfigMap(kubeconfig string) (string, error) {
+	// 创建 k8s 客户端
 	client, err := createInterface(kubeconfig)
 	if err != nil {
 		return "", err
@@ -117,6 +121,7 @@ func getInjectConfigFromConfigMap(kubeconfig string) (string, error) {
 	// values in the data are strings, while proto might use a
 	// different data type.  therefore, we have to get a value by a
 	// key
+	//
 	injectData, exists := meshConfigMap.Data[injectConfigMapKey]
 	if !exists {
 		return "", fmt.Errorf("missing configuration map key %q in %q",
@@ -205,6 +210,7 @@ istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml \
 	--valuesFile /tmp/values.json
 `,
 		RunE: func(c *cobra.Command, _ []string) (err error) {
+			// 验证 command 传入参数
 			if err = validateFlags(); err != nil {
 				return err
 			}
@@ -252,29 +258,35 @@ istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml \
 					}
 				}()
 			}
-
+			// 获取 mesh.yaml 配置
 			var meshConfig *meshconfig.MeshConfig
 			if meshConfigFile != "" {
+				// 获取 meshConfigFile 解析且与 meshDefautlConfig 合并
 				if meshConfig, err = mesh.ReadMeshConfig(meshConfigFile); err != nil {
 					return err
 				}
 			} else {
+				// 若没有在 command 中提供 meshConfigFile,则从 configmap 中取
 				if meshConfig, err = getMeshConfigFromConfigMap(kubeconfig, "kube-inject"); err != nil {
 					return err
 				}
 			}
 
 			var sidecarTemplate string
+			// 获取 injectSidecar template，首先从 command 参数中取 injectConfigFile
 			if injectConfigFile != "" {
 				injectionConfig, err := ioutil.ReadFile(injectConfigFile) // nolint: vetshadow
 				if err != nil {
 					return err
 				}
 				var injectConfig inject.Config
+				// 将 injectionConfig yaml格式的配置解析成 inject.Config structure 对象（inject.Config 为 json）
 				if err := yaml.Unmarshal(injectionConfig, &injectConfig); err != nil {
 					return multierror.Append(err, fmt.Errorf("loading --injectConfigFile"))
 				}
+				// 将 injectConfig 文件中的 template 赋值 sidecarTemplate
 				sidecarTemplate = injectConfig.Template
+				// command 没有提供 config 文件，则从 istio-sidecar-injector configmap 中取
 			} else if sidecarTemplate, err = getInjectConfigFromConfigMap(kubeconfig); err != nil {
 				return err
 			}
