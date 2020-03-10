@@ -121,7 +121,6 @@ func getInjectConfigFromConfigMap(kubeconfig string) (string, error) {
 	// values in the data are strings, while proto might use a
 	// different data type.  therefore, we have to get a value by a
 	// key
-	//
 	injectData, exists := meshConfigMap.Data[injectConfigMapKey]
 	if !exists {
 		return "", fmt.Errorf("missing configuration map key %q in %q",
@@ -292,16 +291,18 @@ istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml \
 			}
 
 			var valuesConfig string
+			// 获取 values
 			if valuesFile != "" {
 				valuesConfigBytes, err := ioutil.ReadFile(valuesFile) // nolint: vetshadow
 				if err != nil {
 					return err
 				}
 				valuesConfig = string(valuesConfigBytes)
+				// 或从 istio-sidecar-injector configmap 中获取
 			} else if valuesConfig, err = getValuesFromConfigMap(kubeconfig); err != nil {
 				return err
 			}
-
+			// 实际使用的 inject config,增加了默认的 policy
 			if emitTemplate {
 				cfg := inject.Config{
 					Policy:   inject.InjectionPolicyEnabled,
@@ -314,7 +315,7 @@ istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml \
 				fmt.Println(string(out))
 				return nil
 			}
-
+			// template/meshConfig/values 拆分合体，注入指定的对象
 			return inject.IntoResourceFile(sidecarTemplate, valuesConfig, meshConfig, reader, writer)
 		},
 		PersistentPreRunE: func(c *cobra.Command, args []string) error {
@@ -325,20 +326,22 @@ istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml \
 			return c.Parent().PersistentPreRunE(c, args)
 		},
 	}
-
+	// 设置 meshConfigFIle flag, 无 shorthand
 	injectCmd.PersistentFlags().StringVar(&meshConfigFile, "meshConfigFile", "",
 		"mesh configuration filename. Takes precedence over --meshConfigMapName if set")
+	// 设置 injectConfigFile flag, 无 shorthand
 	injectCmd.PersistentFlags().StringVar(&injectConfigFile, "injectConfigFile", "",
 		"injection configuration filename. Cannot be used with --injectConfigMapName")
 	injectCmd.PersistentFlags().StringVar(&valuesFile, "valuesFile", "",
 		"injection values configuration filename.")
-
+	// 是否从 command 导入 sidecar template
 	injectCmd.PersistentFlags().BoolVar(&emitTemplate, "emitTemplate", false,
 		"Emit sidecar template based on parameterized flags")
 	_ = injectCmd.PersistentFlags().MarkHidden("emitTemplate")
-
+	// 	要被注入 sidecar 的对象 yaml file
 	injectCmd.PersistentFlags().StringVarP(&inFilename, "filename", "f",
 		"", "Input Kubernetes resource filename")
+	// 输出注入 sidecar 后的 result file
 	injectCmd.PersistentFlags().StringVarP(&outFilename, "output", "o",
 		"", "Modified output Kubernetes resource filename")
 
