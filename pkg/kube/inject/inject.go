@@ -555,6 +555,7 @@ func parseTemplate(tmplStr string, funcMap map[string]interface{}, data SidecarT
 // IntoResourceFile injects the istio proxy into the specified
 // kubernetes YAML file.
 func IntoResourceFile(sidecarTemplate string, valuesConfig string, meshconfig *meshconfig.MeshConfig, in io.Reader, out io.Writer) error {
+	// 初始化一个 buf reader
 	reader := yamlDecoder.NewYAMLReader(bufio.NewReaderSize(in, 4096))
 	for {
 		raw, err := reader.Read()
