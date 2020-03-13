@@ -256,7 +256,7 @@ func (client *Client) GetIstioVersions(namespace string) (*version.MeshInfo, err
 		log.Debugf("will use `--remote=false` to retrieve version info due to `no Istio pods in namespace %q`", namespace)
 		return nil, nil
 	}
-
+	// 定义具体要执行定 command
 	labelToPodDetail := map[string]podDetail{
 		"pilot":            {"/usr/local/bin/pilot-discovery", "discovery"},
 		"citadel":          {"/usr/local/bin/istio_ca", "citadel"},
