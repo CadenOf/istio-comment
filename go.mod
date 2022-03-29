@@ -62,7 +62,7 @@ require (
 	github.com/go-openapi/swag v0.19.6 // indirect
 	github.com/go-redis/redis v6.10.2+incompatible
 	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/gogo/protobuf v1.3.0
+	github.com/gogo/protobuf v1.3.2
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/golang/protobuf v1.3.2
@@ -137,11 +137,11 @@ require (
 	go.opencensus.io v0.22.2
 	go.uber.org/atomic v1.4.0
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582
+	golang.org/x/net v0.0.0-20201021035429-f5854403a974
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
+	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
 	golang.org/x/time v0.0.0-20190921001708-c4c64cad1fd0
-	golang.org/x/tools v0.0.0-20191216173652-a0e659d51361
+	golang.org/x/tools v0.0.0-20210106214847-113979e3529a
 	google.golang.org/api v0.15.0
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20191223191004-3caeed10a8bf
