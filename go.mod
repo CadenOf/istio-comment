@@ -148,7 +148,7 @@ require (
 	google.golang.org/grpc v1.26.0
 	gopkg.in/d4l3k/messagediff.v1 v1.2.1
 	gopkg.in/square/go-jose.v2 v2.3.1
-	gopkg.in/yaml.v2 v2.2.7
+	gopkg.in/yaml.v2 v2.2.8
 	istio.io/api v0.0.0-20200222035036-b245c555a47b
 	istio.io/gogo-genproto v0.0.0-20200122005450-9b171d92064b
 	istio.io/pkg v0.0.0-20200131182711-9ba13e0e34bb
